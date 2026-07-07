@@ -1,9 +1,9 @@
 mblb_columns_names = {
     "Dostawca": "supplier",
-    "Nazwisko (nazwa) 1": "name_1",
-    "Materiał": "material",
+    "Nazwisko (nazwa) 1": "name",
+    "Materiał": "material_number",
     "Opis materiału": "material_description",
-    "Nieogranicz. wykorz.": "unrestricted_use",
+    "Nieogranicz.wykorz.": "Agro_stock",
     "Podst. jedn. miary": "base_unit_of_measure",
     "Wartość całkowita": "total_value"
 }
