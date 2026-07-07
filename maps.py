@@ -20,8 +20,8 @@ zkbe1_columns_names = {
     "NrMat.": "material_number",
     "Krótki tekst mater.": "material_short_text",
     "Minim. wielk. partii": "minimum_lot_size",
-    "SzukCiągZna (IR)": "search_string_ir",
-    "Aktualny dostawca (IR)": "current_supplier_ir",
+    "SzukCiągZna (IR)": "supplier_name",
+    "Aktualny dostawca (IR)": "supplier_number",
     "Status RC": "rc_status",
     "Grupa zaopatrzeniowa": "purchasing_group",
     "WS": "valuation_type",
@@ -34,10 +34,14 @@ zkbe1_columns_names = {
     "Zapas bezpieczeńst": "safety_stock",
     "Pewne wejścia": "firmed_receipts",
     "Ustalone wyjścia": "firmed_issues",
-    "PlaCzasDos(IR)": "planned_delivery_time_ir"
+    "PlaCzasDos(IR)": "planned_delivery_time"
 }
 
 zkbe1_dtypes = {
     "Aktualny dostawca (IR)": "string",
     "Grupa zaopatrzeniowa": "string",
+}
+
+buffer_roundings_dtypes = {
+    "material_number": "string",
 }
