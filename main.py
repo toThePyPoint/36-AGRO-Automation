@@ -1,10 +1,12 @@
 from pathlib import Path
-from datetime import date
+from datetime import date, datetime
 
 import numpy as np
 import pandas as pd
 
 from maps import mblb_dtypes, mblb_columns_names, zkbe1_dtypes, zkbe1_columns_names, buffer_roundings_dtypes
+
+from send_email import send_email_from_application
 
 
 def get_zkbe1_df(file_path, df_dtypes, df_columns_names):
@@ -26,7 +28,7 @@ def is_file_from_today(file_path):
     return date.fromtimestamp(file_path.stat().st_mtime) == date.today()
 
 
-RECEPIENTS = "magdalena.mardon@rotofrank.com; kamil.daniewski@rotofrank.com"
+RECEPIENTS = "magdalena.mardon@rotofrank.com; kamil.daniewski@rotofrank.com; jakub.sternik@rotofrank.com; edyta.matyjaszczyk@rotofrank.com"
 
 
 source_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/source_files")
@@ -48,6 +50,7 @@ helper_file_names = {
 output_file_names = {
     "final_df": "final_table.xlsx",
     "to_trigger_df": "to_trigger_table.xlsx",
+    "to_trigger_html": "to_trigger.html",
 }
 
 # 2. Build full paths dynamically using a dictionary comprehension
@@ -90,6 +93,8 @@ def generate_boxes_report():
             to_trigger=0,
             quantity_after_issue=0
         )
+
+        merged['Agro_stock'] = merged['Agro_stock'].fillna(0)
 
         merged = merged[
             ['material_number', 'material_short_text', 'supplier_number', 'supplier_name', 'stock', 'safety_stock',
@@ -135,6 +140,20 @@ def generate_boxes_report():
         merged.to_excel(output_files['final_df'], index=False)
         to_trigger_df = merged[merged['to_trigger'] > 0]
         to_trigger_df.to_excel(output_files['to_trigger_df'], index=False)
+        to_trigger_df.to_html(output_files['to_trigger_html'])
+
+        # Send email
+        # Load the HTML content
+        with open(output_files['to_trigger_html'], "r", encoding='utf-8') as file:
+            html_content = file.read()
+
+        date_today = datetime.today().strftime('%Y-%m-%d')
+
+        email_body = f"""Dzień dobry, <br>
+        
+                      Kartony do wywołania:\n"""
+        subject = f"Zamówienie kartonów AGRO z dn. {date_today}"
+        send_email_from_application(RECEPIENTS, subject, email_body, output_files['to_trigger_df'], "PLIK", html_content)
 
     else:
         print("⚠️ Warning: One or more files are missing or out of date.")
