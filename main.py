@@ -4,10 +4,14 @@ from datetime import date, datetime
 import numpy as np
 import pandas as pd
 
-from maps import mblb_dtypes, mblb_columns_names, zkbe1_dtypes, zkbe1_columns_names, buffer_roundings_dtypes
+from maps import (mblb_dtypes, mblb_columns_names, zkbe1_dtypes, zkbe1_columns_names, buffer_roundings_dtypes,
+                  mb52_column_names, mb52_dtypes, zkbe1_de_columns_names, zkbe1_de_dtypes)
 
 from send_email import send_email_from_application
 
+
+zkbe1_columns_names = zkbe1_de_columns_names.copy()
+zkbe1_dtypes = zkbe1_de_dtypes.copy()
 
 def get_zkbe1_df(file_path, df_dtypes, df_columns_names):
     df = pd.read_excel(file_path, dtype=df_dtypes)
@@ -31,16 +35,20 @@ def is_file_from_today(file_path):
 RECEPIENTS = "magdalena.mardon@rotofrank.com; kamil.daniewski@rotofrank.com; jakub.sternik@rotofrank.com; edyta.matyjaszczyk@rotofrank.com"
 
 
-source_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/source_files")
+# source_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/source_files")
+source_files_dir = Path(r"\\rfmesrv5\connect\DST_SAP_Transfer\P11\PPS_LUB\06_AGRO")
 helper_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/helper_files")
 output_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/output_files")
 
 
 # 1. Define filenames in ONE place using a dictionary
 source_file_names = {
-    "zkbe1_next_day": "zkbe1_next_day.XLSX",
-    "zkbe1_today": "zkbe1_today.XLSX",
-    "mblb": "mblb.XLSX"
+    # "zkbe1_next_day": "zkbe1_next_day.XLSX",
+    # "zkbe1_today": "zkbe1_today.XLSX",
+    # "mblb": "mblb.XLSX",
+    "mb52": "PUR_LUB_004.xlsx",
+    "zkbe1_next_day": "PUR_LUB_005.xlsx",
+    "zkbe1_today": "PUR_LUB_006.xlsx",
 }
 
 helper_file_names = {
@@ -64,9 +72,14 @@ def generate_boxes_report():
     if all(is_file_from_today(path) for path in source_files.values()):
         print("🚀 All files are fresh. Proceeding!")
 
-        mblb_df = pd.read_excel(source_files["mblb"], dtype=mblb_dtypes)
-        mblb_df = mblb_df.rename(columns=mblb_columns_names)
-        mblb_df = mblb_df[['material_number', 'Agro_stock']]
+        # mblb_df = pd.read_excel(source_files["mblb"], dtype=mblb_dtypes)
+        # mblb_df = mblb_df.rename(columns=mblb_columns_names)
+        # mblb_df = mblb_df[['material_number', 'Agro_stock']]
+
+        mb52_df = pd.read_excel(source_files["mb52"], dtype=mb52_dtypes)
+        mb52_df = mb52_df.rename(columns=mb52_column_names)
+        mb52_df = mb52_df[mb52_df['special_stock_number'] == '640912']
+        mb52_df = mb52_df[['material_number', 'Agro_stock']]
 
         zkbe1_next_day_df = get_zkbe1_df(file_path=source_files['zkbe1_next_day'], df_dtypes=zkbe1_dtypes,
                                          df_columns_names=zkbe1_columns_names)
@@ -86,7 +99,7 @@ def generate_boxes_report():
 
         merged = zkbe1_merged.merge(buffer_roundings_df, on='material_number', how='left')
 
-        merged = merged.merge(mblb_df, on='material_number', how='left')
+        merged = merged.merge(mb52_df, on='material_number', how='left')
 
         merged = merged.assign(
             gap=0,

@@ -13,6 +13,24 @@ mblb_dtypes = {
     "Materiał": "string",
 }
 
+mb52_column_names = {
+    "Material": "material_number",
+    "Bezeichnung": "material_description",
+    "Frei verwendbar": "Agro_stock",  # Odpowiednik "Nieogranicz.wykorz."
+    "Lagerort": "storage_location",
+    "Basis-ME": "base_unit_of_measure",  # Odpowiednik "Podst. jedn. miary"
+    "Gesperrt": "blocked_stock",
+    "In QualPrüfung": "quality_inspection_stock",
+    "Wert Sperrbestand": "blocked_stock_value",
+    "SobNummer": "special_stock_number",  # Skrót od Sonderbestand Nummer
+}
+
+mb52_dtypes = {
+    "Material": "string",
+    "Lagerort": "string",
+    "SobNummer": "string",
+}
+
 zkbe1_columns_names = {
     "Pio.ogólny": "general_priority",
     "Prio.zapasów": "stock_priority",
@@ -40,6 +58,35 @@ zkbe1_columns_names = {
 zkbe1_dtypes = {
     "Aktualny dostawca (IR)": "string",
     "Grupa zaopatrzeniowa": "string",
+}
+
+zkbe1_de_columns_names = {
+    "GesamtPrio": "general_priority",
+    "BestandsPrio": "stock_priority",
+    "Best": "purchase_order",
+    "MatNr.": "material_number",
+    "Materialkurztext   :": "material_short_text",
+    "Mind.LosGr.": "minimum_lot_size",
+    "Suchbegriff (EIS)": "supplier_name",
+    "Aktueller Lieferant (EIS)": "supplier_number",
+    "Status RK": "rc_status",
+    "Eink.Gruppe": "purchasing_group",
+    "WSM": "valuation_type",
+    "Planungskalender": "planning_calendar",
+    "Disponent": "mrp_controller",
+    "Rundg.Mg": "rounding_value",
+    "GP": "business_partner",
+    "BP": "purchasing_block",
+    "Lagerbestand": "stock",
+    "Sicherheitsbestand": "safety_stock",
+    "Fester Zugang": "firmed_receipts",
+    "Feste Abg. bis": "firmed_issues",
+    "PLIFZ (EIS)": "planned_delivery_time"
+}
+
+zkbe1_de_dtypes = {
+    "Aktueller Lieferant (EIS)": "string",
+    "Eink.Gruppe": "string"
 }
 
 buffer_roundings_dtypes = {
