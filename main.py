@@ -32,13 +32,16 @@ def is_file_from_today(file_path):
     return date.fromtimestamp(file_path.stat().st_mtime) == date.today()
 
 
-RECEPIENTS = "magdalena.mardon@rotofrank.com; kamil.daniewski@rotofrank.com; jakub.sternik@rotofrank.com; edyta.matyjaszczyk@rotofrank.com"
+RECIPIENTS = "sekretariat@agrolubartow.pl"
+CC_RECIPIENTS = "jaroslaw.keller@rotofrank.com; agrolubartow@o2.pl; jakub.sternik@rotofrank.com"
 
 
 # source_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/source_files")
 source_files_dir = Path(r"\\rfmesrv5\connect\DST_SAP_Transfer\P11\PPS_LUB\06_AGRO")
-helper_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/helper_files")
-output_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/output_files")
+# helper_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/helper_files")
+helper_files_dir = Path(r"P:\Zakupy\O\AGRO_Automation\helper_files")
+# output_files_dir = Path(r"P:/Technisch/PLANY PRODUKCJI/PLANIŚCI/PP_TOOLS_TEMP_FILES/17_AGRO/output_files")
+output_files_dir = Path(r"P:\Zakupy\O\AGRO_Automation\output_files")
 
 
 # 1. Define filenames in ONE place using a dictionary
@@ -57,7 +60,7 @@ helper_file_names = {
 
 output_file_names = {
     "final_df": "final_table.xlsx",
-    "to_trigger_df": "to_trigger_table.xlsx",
+    "to_trigger_df": "kartony_wywolanie.xlsx",
     "to_trigger_html": "to_trigger.html",
 }
 
@@ -112,7 +115,7 @@ def generate_boxes_report():
         merged = merged[
             ['material_number', 'material_short_text', 'supplier_number', 'supplier_name', 'stock', 'safety_stock',
              'planned_delivery_time', 'buffer', 'firmed_issues_today', 'firmed_issues_next_day', 'gap', 'rounding',
-             'to_trigger', 'Agro_stock', 'quantity_after_issue']]
+             'to_trigger', 'Agro_stock', 'quantity_after_issue', 'comment']]
 
         # --- Formulas ---
         # Column: GAP
@@ -152,7 +155,32 @@ def generate_boxes_report():
 
         merged.to_excel(output_files['final_df'], index=False)
         to_trigger_df = merged[merged['to_trigger'] > 0]
-        to_trigger_df.to_excel(output_files['to_trigger_df'], index=False)
+
+        to_trigger_df = to_trigger_df[['material_number', 'material_short_text', 'to_trigger', 'comment']]
+        to_trigger_df = to_trigger_df.rename(
+            columns={'material_number': 'Numer SAP', 'material_short_text': 'Nazwa', 'to_trigger': 'Ilość',
+                     'comment': 'komentarz'})
+
+        # to_trigger_df.to_excel(output_files['to_trigger_df'], index=False)
+
+        # 1. Save the DataFrame using ExcelWriter and openpyxl engine
+        with pd.ExcelWriter(
+                output_files['to_trigger_df'], engine='openpyxl'
+        ) as writer:
+            to_trigger_df.to_excel(writer, index=False, sheet_name='Sheet1')
+
+            # 2. Get the worksheet for modification
+            worksheet = writer.sheets['Sheet1']
+
+            # 3. Iterate through columns and adjust width
+            for col in worksheet.columns:
+                # Find the maximum string length in the current column
+                max_len = max(len(str(cell.value or '')) for cell in col)
+                # Get the column letter (e.g., 'A', 'B')
+                col_letter = col[0].column_letter
+                # Add padding (e.g., +3) so the text doesn't touch the edges
+                worksheet.column_dimensions[col_letter].width = max(max_len + 3, 10)
+
         to_trigger_df.to_html(output_files['to_trigger_html'])
 
         # Send email
@@ -166,7 +194,8 @@ def generate_boxes_report():
         
                       Kartony do wywołania:\n"""
         subject = f"Zamówienie kartonów AGRO z dn. {date_today}"
-        send_email_from_application(RECEPIENTS, subject, email_body, output_files['to_trigger_df'], "PLIK", html_content)
+        send_email_from_application(RECIPIENTS, subject, email_body, output_files['to_trigger_df'], "PLIK",
+                                    html_content, CC_RECIPIENTS)
 
     else:
         print("⚠️ Warning: One or more files are missing or out of date.")

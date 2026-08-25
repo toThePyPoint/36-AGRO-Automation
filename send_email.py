@@ -1,8 +1,9 @@
 import win32com.client as win32
+from pathlib import Path
 
 
 def send_email_from_application(
-    recipients, subject, body, file_link=None, link_text="Otwórz plik", html_content=""
+    recipients, subject, body, file_link=None, link_text="Otwórz plik", html_content="", recipients_cc=None
 ):
     # Create an Outlook application instance
     outlook = win32.Dispatch("Outlook.Application")
@@ -12,14 +13,19 @@ def send_email_from_application(
 
     # Set the email parameters
     mail.To = recipients
+
+    if recipients_cc:
+        mail.CC = recipients_cc
+
     mail.Subject = subject
 
     # Jeśli przekazano link do pliku, doklejamy go na końcu treści HTML
     if file_link:
-        attachment_html = (
-            f'<br><br><p><b>Załącznik:</b> <a href="{file_link}">{link_text}</a></p>'
-        )
-        body += attachment_html
+        mail.Attachments.Add(str(Path(file_link).resolve()))
+        # attachment_html = (
+        #     f'<br><br><p><b>Załącznik:</b> <a href="{file_link}">{link_text}</a></p>'
+        # )
+        # body += attachment_html
         body += "<br>"
         body += html_content
 
