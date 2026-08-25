@@ -10,6 +10,7 @@ from maps import (mblb_dtypes, mblb_columns_names, zkbe1_dtypes, zkbe1_columns_n
                   mb52_column_names, mb52_dtypes, zkbe1_de_columns_names, zkbe1_de_dtypes)
 
 from send_email import send_email_from_application
+from helper_functions import export_to_formatted_excel
 
 
 zkbe1_columns_names = zkbe1_de_columns_names.copy()
@@ -168,44 +169,7 @@ def generate_boxes_report():
 
         # to_trigger_df.to_excel(output_files['to_trigger_df'], index=False)
 
-        # Define red highlight styling for negative values
-        red_fill = PatternFill(
-            start_color='FFC7CE', end_color='FFC7CE', fill_type='solid'
-        )  # Light red background
-        red_font = Font(color='9C0006', bold=True)  # Dark red bold text
-
-        # 1. Save the DataFrame using ExcelWriter and openpyxl engine
-        with pd.ExcelWriter(
-                output_files['to_trigger_df'], engine='openpyxl'
-        ) as writer:
-            to_trigger_df.to_excel(writer, index=False, sheet_name='Sheet1')
-
-            # 2. Get the worksheet for modification
-            worksheet = writer.sheets['Sheet1']
-
-            # 3. Iterate through columns to auto-fit width
-            for col in worksheet.columns:
-                max_len = max(len(str(cell.value or '')) for cell in col)
-                col_letter = col[0].column_letter
-                worksheet.column_dimensions[col_letter].width = max(max_len + 3, 10)
-
-            # 4. Highlight negative values in 'Ilość po wydaniu' column
-            col_name = 'Ilość po wydaniu'
-            if col_name in to_trigger_df.columns:
-                # Get 1-based index of the column (1 for A, 2 for B, etc.)
-                col_idx = to_trigger_df.columns.get_loc(col_name) + 1
-
-                # Iterate over rows in the target column (skip header row 1)
-                for row_idx in range(2, worksheet.max_row + 1):
-                    cell = worksheet.cell(row=row_idx, column=col_idx)
-
-                    # Check if the cell value is numeric and negative
-                    if (
-                            isinstance(cell.value, (int, float))
-                            and cell.value < 0
-                    ):
-                        cell.fill = red_fill
-                        cell.font = red_font
+        export_to_formatted_excel(to_trigger_df, output_files['to_trigger_df'])
 
         to_trigger_df.to_html(output_files['to_trigger_html'])
 
