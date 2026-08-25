@@ -156,10 +156,13 @@ def generate_boxes_report():
         merged.to_excel(output_files['final_df'], index=False)
         to_trigger_df = merged[merged['to_trigger'] > 0]
 
-        to_trigger_df = to_trigger_df[['material_number', 'material_short_text', 'to_trigger', 'comment']]
+        to_trigger_df = to_trigger_df[['material_number', 'material_short_text', 'to_trigger', 'quantity_after_issue',
+                                       'comment']]
+        to_trigger_df = to_trigger_df.sort_values(by=['to_trigger'], ascending=[False])
+
         to_trigger_df = to_trigger_df.rename(
             columns={'material_number': 'Numer SAP', 'material_short_text': 'Nazwa', 'to_trigger': 'Ilość',
-                     'comment': 'komentarz'})
+                     'comment': 'komentarz', 'quantity_after_issue': 'Ilość po wydaniu'})
 
         # to_trigger_df.to_excel(output_files['to_trigger_df'], index=False)
 
@@ -185,17 +188,17 @@ def generate_boxes_report():
 
         # Send email
         # Load the HTML content
-        with open(output_files['to_trigger_html'], "r", encoding='utf-8') as file:
-            html_content = file.read()
+        # with open(output_files['to_trigger_html'], "r", encoding='utf-8') as file:
+        #     html_content = file.read()
 
         date_today = datetime.today().strftime('%Y-%m-%d')
 
         email_body = f"""Dzień dobry, <br>
         
-                      Kartony do wywołania:\n"""
+                      Kartony do wywołania.\n"""
         subject = f"Zamówienie kartonów AGRO z dn. {date_today}"
         send_email_from_application(RECIPIENTS, subject, email_body, output_files['to_trigger_df'], "PLIK",
-                                    html_content, CC_RECIPIENTS)
+                                    "", CC_RECIPIENTS)
 
     else:
         print("⚠️ Warning: One or more files are missing or out of date.")
