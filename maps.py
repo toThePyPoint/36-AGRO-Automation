@@ -13,22 +13,41 @@ mblb_dtypes = {
     "Materiał": "string",
 }
 
+# mb52_column_names = {
+#     "Material": "material_number",
+#     "Bezeichnung": "material_description",
+#     "Frei verwendbar": "Agro_stock",  # Odpowiednik "Nieogranicz.wykorz."
+#     "Lagerort": "storage_location",
+#     "Basis-ME": "base_unit_of_measure",  # Odpowiednik "Podst. jedn. miary"
+#     "Gesperrt": "blocked_stock",
+#     "In QualPrüfung": "quality_inspection_stock",
+#     "Wert Sperrbestand": "blocked_stock_value",
+#     "SobNummer": "special_stock_number",  # Skrót od Sonderbestand Nummer
+# }
+#
+# mb52_dtypes = {
+#     "Material": "string",
+#     "Lagerort": "string",
+#     "SobNummer": "string",
+# }
+
+
 mb52_column_names = {
-    "Material": "material_number",
-    "Bezeichnung": "material_description",
-    "Frei verwendbar": "Agro_stock",  # Odpowiednik "Nieogranicz.wykorz."
-    "Lagerort": "storage_location",
-    "Basis-ME": "base_unit_of_measure",  # Odpowiednik "Podst. jedn. miary"
-    "Gesperrt": "blocked_stock",
-    "In QualPrüfung": "quality_inspection_stock",
-    "Wert Sperrbestand": "blocked_stock_value",
-    "SobNummer": "special_stock_number",  # Skrót od Sonderbestand Nummer
+    "Materiał": "material_number",
+    "Opis": "material_description",
+    "Nieogr. wykorz.": "Agro_stock",
+    "Skład": "storage_location",
+    "Podst.JM": "base_unit_of_measure",
+    "Zablokowane": "blocked_stock",
+    "W kontr.jakości": "quality_inspection_stock",
+    "Wart. zap. blok.": "blocked_stock_value",
+    "Nr zap. specj.": "special_stock_number",
 }
 
 mb52_dtypes = {
-    "Material": "string",
-    "Lagerort": "string",
-    "SobNummer": "string",
+    "Materiał": "string",
+    "Skład": "string",
+    "Nr zap. specj.": "string",
 }
 
 zkbe1_columns_names = {
@@ -48,7 +67,8 @@ zkbe1_columns_names = {
     "Wart.zaokrąg.": "rounding_value",
     "GP": "business_partner",
     "BP": "purchasing_block",
-    "Zapas": "stock",
+    # "Zapas": "stock",
+    "       Zapas": "stock",
     "Zapas bezpieczeńst": "safety_stock",
     "Pewne wejścia": "firmed_receipts",
     "Ustalone wyjścia": "firmed_issues",

@@ -13,8 +13,8 @@ from send_email import send_email_from_application
 from helper_functions import export_to_formatted_excel
 
 
-zkbe1_columns_names = zkbe1_de_columns_names.copy()
-zkbe1_dtypes = zkbe1_de_dtypes.copy()
+# zkbe1_columns_names = zkbe1_de_columns_names.copy()
+# zkbe1_dtypes = zkbe1_de_dtypes.copy()
 
 def get_zkbe1_df(file_path, df_dtypes, df_columns_names):
     df = pd.read_excel(file_path, dtype=df_dtypes)
